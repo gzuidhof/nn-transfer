@@ -7,6 +7,7 @@ setup(
     install_requires=[
         'numpy',
         'keras',
+        'h5py',
     ],
     test_suite='nose.collector',
     tests_require=['nose'],
