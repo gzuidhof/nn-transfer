@@ -4,7 +4,7 @@ This repository contains utilities for **converting PyTorch models to Keras**. M
 
 From Keras you can then run it on the **TensorFlow**, **Theano** and **CNTK** backend. You can also convert it to a pure TensorFlow model (see [[1]](https://github.com/amir-abdi/keras_to_tensorflow) and [[2]](https://blog.keras.io/keras-as-a-simplified-interface-to-tensorflow-tutorial.html)), allow you to choose more robust deployment options in the cloud, or even mobile devices. Oh and from Keras you can also do inference in browsers with [keras-js](https://github.com/transcranial/keras-js).
 
-*Keras -> PyTorch is not there yet. I am not sure whether there is any use case for that.*
+*Keras -> PyTorch is not there yet: I am not sure whether there is any use case for that.*
 
 ## Installation
 Clone this repository, and simply run
@@ -29,5 +29,5 @@ There is also Travis CI which will automatically build every commit, see the but
 
 ## Code guidelines
 
-* This repository is fully PEP8 compliant. Before making a pull request, please run a linter. I personally use `flake8`.
-* It works for both Python 2 and 3, let's keep it that way.
+* This repository is fully PEP8 compliant. I recommend `flake8`.
+* It works for both Python 2 and 3.
