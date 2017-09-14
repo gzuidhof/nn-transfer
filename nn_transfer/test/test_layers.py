@@ -6,7 +6,7 @@ from torch.autograd import Variable
 
 import keras
 from keras.models import Sequential
-from keras.layers import BatchNormalization, ELU
+from keras.layers import BatchNormalization, ELU, Conv2DTranspose
 
 from .. import transfer
 
@@ -30,6 +30,13 @@ class ELUNet(nn.Module):
     def forward(self, x):
         return self.elu(x)
 
+class TransposeNet(nn.Module):
+    def __init__(self):
+        super(TransposeNet, self).__init__()
+        self.trans = nn.ConvTranspose2d(3,32,2,2)
+
+    def forward(self, x):
+        return self.trans(x)
 
 class TestLayers(unittest.TestCase):
 
@@ -53,6 +60,23 @@ class TestLayers(unittest.TestCase):
 
         pytorch_model = BatchNet()
         pytorch_model.eval()
+
+        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+
+        keras_prediction = keras_model.predict(self.test_data_keras)
+        pytorch_prediction = pytorch_model(self.test_data_pytorch).data.numpy()
+
+        for v1, v2 in zip(keras_prediction.flatten(),
+                          pytorch_prediction.flatten()):
+            self.assertAlmostEqual(v1, v2, delta=2e-3)
+
+    def test_transposed_conv(self):
+        keras_model = Sequential()
+        keras_model.add(Conv2DTranspose(32, (2,2), strides=(2,2), input_shape=(3, 32, 32), name='trans'))
+        keras_model.compile(loss=keras.losses.categorical_crossentropy,
+                            optimizer=keras.optimizers.SGD())
+
+        pytorch_model = TransposeNet()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
 
