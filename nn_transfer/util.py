@@ -16,6 +16,6 @@ def dig_to_params(keras_h5_layer):
     # files for some reason. e.g. h5['model_weights']['conv1']['dense_1'] \
     # ['dense_2']['dense_3']['conv2d_7']['dense_4']['conv1']
     while not _contains_weights(keras_h5_layer):
-        keras_h5_layer = keras_h5_layer[keras_h5_layer.keys()[0]]
+        keras_h5_layer = keras_h5_layer[list(keras_h5_layer.keys())[0]]
 
     return keras_h5_layer
