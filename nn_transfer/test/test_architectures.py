@@ -58,9 +58,9 @@ class TestArchitectures(unittest.TestCase):
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
 
-        keras_prediction = keras_model.predict(self.vgg_test_data_keras[:,:1])
+        keras_prediction = keras_model.predict(self.vgg_test_data_keras[:, :1])
         pytorch_prediction = pytorch_model(
-            self.vgg_test_data_pytorch[:,:1]).data.numpy()
+            self.vgg_test_data_pytorch[:, :1]).data.numpy()
 
         self.assertEqual(keras_prediction.shape, pytorch_prediction.shape)
         for v1, v2 in zip(keras_prediction.flatten(),

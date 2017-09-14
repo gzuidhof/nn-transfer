@@ -30,13 +30,15 @@ class ELUNet(nn.Module):
     def forward(self, x):
         return self.elu(x)
 
+
 class TransposeNet(nn.Module):
     def __init__(self):
         super(TransposeNet, self).__init__()
-        self.trans = nn.ConvTranspose2d(3,32,2,2)
+        self.trans = nn.ConvTranspose2d(3, 32, 2, 2)
 
     def forward(self, x):
         return self.trans(x)
+
 
 class TestLayers(unittest.TestCase):
 
@@ -72,7 +74,8 @@ class TestLayers(unittest.TestCase):
 
     def test_transposed_conv(self):
         keras_model = Sequential()
-        keras_model.add(Conv2DTranspose(32, (2,2), strides=(2,2), input_shape=(3, 32, 32), name='trans'))
+        keras_model.add(Conv2DTranspose(32, (2, 2), strides=(
+            2, 2), input_shape=(3, 32, 32), name='trans'))
         keras_model.compile(loss=keras.losses.categorical_crossentropy,
                             optimizer=keras.optimizers.SGD())
 
