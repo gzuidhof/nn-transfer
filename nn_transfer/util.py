@@ -1,6 +1,5 @@
 from collections import OrderedDict
 
-
 def state_dict_layer_names(state_dict):
     layer_names = [".".join(k.split('.')[:-1]) for k in state_dict.keys()]
     # Order preserving unique set of names
@@ -8,7 +7,8 @@ def state_dict_layer_names(state_dict):
 
 
 def _contains_weights(keras_h5_layer):
-    return 'kernel' in keras_h5_layer or 'beta' in keras_h5_layer
+    return ('kernel' in keras_h5_layer or 'beta' in keras_h5_layer
+        or 'kernel:0' in keras_h5_layer or 'beta:0' in keras_h5_layer)
 
 
 def dig_to_params(keras_h5_layer):

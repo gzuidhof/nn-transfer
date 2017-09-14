@@ -3,12 +3,21 @@ from collections import OrderedDict
 
 import h5py
 import torch
+import keras
 
 from . import util
 
+VAR_AFFIX = ':0' if keras.backend.backend() == 'tensorflow' else ''
+
 
 def keras_to_pytorch(keras_model, pytorch_model,
-                     flip_filters=True, verbose=True):
+                     flip_filters=None, verbose=True):
+
+    # If not specifically set, determine whether to flip filters automatically
+    # for the right backend.
+    if flip_filters is None:
+        flip_filters = not keras.backend.backend() == 'tensorflow'
+
     keras_model.save('temp.h5')
     target_state_dict = pytorch_model.state_dict()
     target_layer_names = util.state_dict_layer_names(target_state_dict)
@@ -40,9 +49,9 @@ def keras_to_pytorch(keras_model, pytorch_model,
             if weight_key in target_state_dict:
 
                 if running_var_key in target_state_dict:
-                    weights = params['gamma'][:]
+                    weights = params['gamma' + VAR_AFFIX][:]
                 else:
-                    weights = params['kernel'][:]
+                    weights = params['kernel' + VAR_AFFIX][:]
 
                 if len(weights.shape) == 4:  # Assume 2D conv
                     weights = weights.transpose(3, 2, 0, 1)
@@ -59,19 +68,19 @@ def keras_to_pytorch(keras_model, pytorch_model,
 
             if bias_key in target_state_dict:
                 if running_var_key in target_state_dict:
-                    bias = params['beta'][:]
+                    bias = params['beta' + VAR_AFFIX][:]
                 else:
-                    bias = params['bias'][:]
+                    bias = params['bias' + VAR_AFFIX][:]
                 state_dict[bias_key] = torch.from_numpy(
                     bias.transpose())
 
             if running_mean_key in target_state_dict:
-                running_mean = params['moving_mean'][:]
+                running_mean = params['moving_mean' + VAR_AFFIX][:]
                 state_dict[running_mean_key] = torch.from_numpy(
                     running_mean.transpose())
 
             if running_var_key in target_state_dict:
-                running_var = params['moving_variance'][:]
+                running_var = params['moving_variance' + VAR_AFFIX][:]
                 state_dict[running_var_key] = torch.from_numpy(
                     running_var.transpose())
 

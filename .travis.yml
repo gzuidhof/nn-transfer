@@ -23,9 +23,10 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - conda install pytorch torchvision cuda80 numpy scipy h5py -c soumith
-  #- conda install tensorflow -c conda-forge
+  - conda install tensorflow -c conda-forge
   - conda install theano pygpu
   - python setup.py install
 
 script:
   - KERAS_BACKEND=theano python setup.py test
+  - KERAS_BACKEND=tensorflow python setup.py test

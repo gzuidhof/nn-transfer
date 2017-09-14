@@ -8,8 +8,6 @@ From Keras you can then run it on the **TensorFlow**, **Theano** and **CNTK** ba
 
 *Keras -> PyTorch is not there yet: I am not sure whether there is any use case for that.*  
 
-**TODO**: Make converting also possible without having Theano backend configured.*
-
 ## Installation
 Clone this repository, and simply run
 
