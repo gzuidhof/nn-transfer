@@ -15,7 +15,7 @@ Clone this repository, and simply run
 pip install .
 ```
 
-You need to have PyTorch and torchvision installed beforehand, see the [PyTorch webiste](https://www.pytorch.org) for how to easily install that.
+You need to have PyTorch and torchvision installed beforehand, see the [PyTorch website](https://www.pytorch.org) for how to easily install that.
 
 ## Tests
 
