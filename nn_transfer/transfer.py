@@ -53,11 +53,15 @@ def keras_to_pytorch(keras_model, pytorch_model,
                 else:
                     weights = params['kernel' + VAR_AFFIX][:]
 
-                if len(weights.shape) == 4:  # Assume 2D conv
+                if len(weights.shape) == 3:  # 1D conv
+                    weights = weights.transpose()
+                    if flip_filters:
+                        weights = weights[..., ::-1].copy()
+                if len(weights.shape) == 4:  # 2D conv
                     weights = weights.transpose(3, 2, 0, 1)
                     if flip_filters:
                         weights = weights[..., ::-1, ::-1].copy()
-                elif len(weights.shape) == 5:  # Assume 3D conv
+                elif len(weights.shape) == 5:  # 3D conv
                     weights = weights.transpose(4, 3, 0, 1, 2)
                     if flip_filters:
                         weights = weights[..., ::-1, ::-1, ::-1].copy()
