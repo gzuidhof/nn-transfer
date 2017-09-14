@@ -15,7 +15,7 @@ def keras_to_pytorch(keras_model, pytorch_model,
 
     with h5py.File('temp.h5', 'r') as f:
         model_weights = f['model_weights']
-        layer_names = map(str, model_weights.keys())
+        layer_names = list(map(str, model_weights.keys()))
 
         if verbose:
             print("Layer names in target", target_layer_names)
