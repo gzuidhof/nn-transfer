@@ -1,6 +1,7 @@
 from __future__ import print_function
 from collections import OrderedDict
 
+import numpy as np
 import h5py
 import torch
 import keras
@@ -46,12 +47,15 @@ def keras_to_pytorch(keras_model, pytorch_model,
             running_mean_key = layer + '.running_mean'
             running_var_key = layer + '.running_var'
 
+            # Load weights (or other learned parameters)
             if weight_key in target_state_dict:
 
-                if running_var_key in target_state_dict:
+                if 'gamma' + VAR_AFFIX in params:
                     weights = params['gamma' + VAR_AFFIX][:]
-                else:
+                elif 'kernel' + VAR_AFFIX in params:
                     weights = params['kernel' + VAR_AFFIX][:]
+                else:
+                    weights = np.squeeze(params['alpha' + VAR_AFFIX][:])
 
                 if len(weights.shape) == 3:  # 1D conv
                     weights = weights.transpose()
@@ -70,6 +74,7 @@ def keras_to_pytorch(keras_model, pytorch_model,
 
                 state_dict[weight_key] = torch.from_numpy(weights)
 
+            # Load weights
             if bias_key in target_state_dict:
                 if running_var_key in target_state_dict:
                     bias = params['beta' + VAR_AFFIX][:]
@@ -78,11 +83,13 @@ def keras_to_pytorch(keras_model, pytorch_model,
                 state_dict[bias_key] = torch.from_numpy(
                     bias.transpose())
 
+            # Load batch normalization running mean
             if running_mean_key in target_state_dict:
                 running_mean = params['moving_mean' + VAR_AFFIX][:]
                 state_dict[running_mean_key] = torch.from_numpy(
                     running_mean.transpose())
 
+            # Load batch normalization running variance
             if running_var_key in target_state_dict:
                 running_var = params['moving_variance' + VAR_AFFIX][:]
                 state_dict[running_var_key] = torch.from_numpy(

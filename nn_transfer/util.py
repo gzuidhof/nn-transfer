@@ -1,5 +1,9 @@
 from collections import OrderedDict
 
+_WEIGHT_KEYS = ['kernel', 'beta', 'alpha']
+_WEIGHT_KEYS += [key+':0' for key in _WEIGHT_KEYS]
+
+
 def state_dict_layer_names(state_dict):
     layer_names = [".".join(k.split('.')[:-1]) for k in state_dict.keys()]
     # Order preserving unique set of names
@@ -7,8 +11,10 @@ def state_dict_layer_names(state_dict):
 
 
 def _contains_weights(keras_h5_layer):
-    return ('kernel' in keras_h5_layer or 'beta' in keras_h5_layer
-        or 'kernel:0' in keras_h5_layer or 'beta:0' in keras_h5_layer)
+    for key in _WEIGHT_KEYS:
+        if key in keras_h5_layer:
+            return True
+    return False
 
 
 def dig_to_params(keras_h5_layer):
