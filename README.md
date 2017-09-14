@@ -1,5 +1,7 @@
 # nn-transfer
 
+[![Build Status](https://travis-ci.org/gzuidhof/nn-transfer.svg?branch=master)](https://travis-ci.org/gzuidhof/nn-transfer)
+
 This repository contains utilities for **converting PyTorch models to Keras**. More specifically, it allows you to copy the weights from a PyTorch model to an identical model in Keras.
 
 From Keras you can then run it on the **TensorFlow**, **Theano** and **CNTK** backend. You can also convert it to a pure TensorFlow model (see [[1]](https://github.com/amir-abdi/keras_to_tensorflow) and [[2]](https://blog.keras.io/keras-as-a-simplified-interface-to-tensorflow-tutorial.html)), allow you to choose more robust deployment options in the cloud, or even mobile devices. Oh and from Keras you can also do inference in browsers with [keras-js](https://github.com/transcranial/keras-js).
