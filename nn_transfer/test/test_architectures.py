@@ -68,7 +68,6 @@ class TestArchitectures(unittest.TestCase):
             self.assertAlmostEqual(v1, v2, delta=1e-6)
 
     def test_vggnet(self):
-        return
         keras_model = vggnet_keras()
         pytorch_model = vggnet_pytorch()
         pytorch_model.eval()
