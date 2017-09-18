@@ -166,21 +166,33 @@ def convert_weights(weights, to_keras, flip_filters, flip_channels=False):
 
     if len(weights.shape) == 3:  # 1D conv
         weights = weights.transpose()
+
+        if flip_channels:
+            weights = weights[::-1]
+
         if flip_filters:
             weights = weights[..., ::-1].copy()
+
     if len(weights.shape) == 4:  # 2D conv
-        if to_keras:  # K C F F
+        if to_keras:  # D1 D2 F F
             weights = weights.transpose(3, 2, 0, 1)
         else:
             weights = weights.transpose(2, 3, 1, 0)
 
         if flip_channels:
             weights = weights[::-1, ::-1]
-
         if flip_filters:
             weights = weights[..., ::-1, ::-1].copy()
+
     elif len(weights.shape) == 5:  # 3D conv
-        weights = weights.transpose(4, 3, 0, 1, 2)
+        if to_keras:  # D1 D2 D3 F F
+            weights = weights.transpose(4, 3, 0, 1, 2)
+        else:
+            weights = weights.transpose(2, 3, 4, 1, 0)
+
+        if flip_channels:
+            weights = weights[::-1, ::-1, ::-1]
+
         if flip_filters:
             weights = weights[..., ::-1, ::-1, ::-1].copy()
     else:

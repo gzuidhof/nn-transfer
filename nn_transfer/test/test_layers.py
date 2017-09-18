@@ -6,7 +6,7 @@ import torch.nn as nn
 import keras
 from keras.models import Sequential
 from keras.layers import BatchNormalization, PReLU, ELU
-from keras.layers import Conv2DTranspose, Conv2D
+from keras.layers import Conv2DTranspose, Conv2D, Conv3D
 
 from .helpers import TransferTestCase
 
@@ -58,10 +58,20 @@ class Conv2DNet(nn.Module):
         return self.conv(x)
 
 
+class Conv3DNet(nn.Module):
+    def __init__(self):
+        super(Conv3DNet, self).__init__()
+        self.conv = nn.Conv3d(3, 8, 5)
+
+    def forward(self, x):
+        return self.conv(x)
+
+
 class TestLayers(TransferTestCase, unittest.TestCase):
 
     def setUp(self):
         self.test_data = np.random.rand(2, 3, 32, 32)
+        self.test_data_3d = np.random.rand(2, 3, 8, 8, 8)
 
     def test_batch_normalization(self):
         keras_model = Sequential()
@@ -124,6 +134,20 @@ class TestLayers(TransferTestCase, unittest.TestCase):
 
         self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
+
+    def test_conv3d(self):
+        keras_model = Sequential()
+        keras_model.add(Conv3D(8, (5, 5, 5), input_shape=(3, 8, 8, 8),
+                               name='conv'))
+        keras_model.compile(loss=keras.losses.categorical_crossentropy,
+                            optimizer=keras.optimizers.SGD())
+
+        pytorch_model = Conv3DNet()
+
+        self.transfer(keras_model, pytorch_model)
+        self.assertEqualPrediction(keras_model,
+                                   pytorch_model,
+                                   self.test_data_3d)
 
     def test_keras_model_changed_as_expected(self):
         keras_model = Sequential()
