@@ -133,7 +133,11 @@ class TestLayers(TransferTestCase, unittest.TestCase):
         pytorch_model = Conv2DNet()
 
         self.transfer(keras_model, pytorch_model)
-        self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
+        self.assertEqualPrediction(keras_model,
+                                   pytorch_model,
+                                   self.test_data,
+                                   delta=1e-4)
+
 
     def test_conv3d(self):
         keras_model = Sequential()
@@ -147,7 +151,8 @@ class TestLayers(TransferTestCase, unittest.TestCase):
         self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(keras_model,
                                    pytorch_model,
-                                   self.test_data_3d)
+                                   self.test_data_3d,
+                                   delta=1e-4)
 
     def test_keras_model_changed_as_expected(self):
         keras_model = Sequential()
