@@ -2,6 +2,8 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
+from .. import transfer
+
 
 class TransferTestCase(object):
     def assertEqualPrediction(
@@ -23,3 +25,8 @@ class TransferTestCase(object):
         for v1, v2 in zip(keras_prediction.flatten(),
                           pytorch_prediction.flatten()):
             self.assertAlmostEqual(v1, v2, delta=delta)
+
+    def transfer(self, keras_model, pytorch_model, verbose=False):
+        transfer.keras_to_pytorch(keras_model,
+                                  pytorch_model,
+                                  verbose=verbose)

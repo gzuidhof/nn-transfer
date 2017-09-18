@@ -2,8 +2,6 @@ import unittest
 
 import numpy as np
 
-from .. import transfer
-
 from .helpers import TransferTestCase
 from .architectures.lenet import lenet_keras, LeNetPytorch
 from .architectures.simplenet import simplenet_keras, SimpleNetPytorch
@@ -22,7 +20,7 @@ class TestArchitectures(TransferTestCase, unittest.TestCase):
         keras_model = simplenet_keras()
         pytorch_model = SimpleNetPytorch()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(
             keras_model,
             pytorch_model,
@@ -32,7 +30,7 @@ class TestArchitectures(TransferTestCase, unittest.TestCase):
         keras_model = lenet_keras()
         pytorch_model = LeNetPytorch()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(
             keras_model,
             pytorch_model,
@@ -43,7 +41,7 @@ class TestArchitectures(TransferTestCase, unittest.TestCase):
         pytorch_model = UNetPytorch()
         pytorch_model.eval()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(
             keras_model,
             pytorch_model,
@@ -54,7 +52,7 @@ class TestArchitectures(TransferTestCase, unittest.TestCase):
         pytorch_model = vggnet_pytorch()
         pytorch_model.eval()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(
             keras_model, pytorch_model, self.test_data_vgg)
 

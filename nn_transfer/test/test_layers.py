@@ -7,8 +7,6 @@ import keras
 from keras.models import Sequential
 from keras.layers import BatchNormalization, PReLU, ELU, Conv2DTranspose
 
-from .. import transfer
-
 from .helpers import TransferTestCase
 
 keras.backend.set_image_data_format('channels_first')
@@ -64,7 +62,7 @@ class TestLayers(TransferTestCase, unittest.TestCase):
 
         pytorch_model = BatchNet()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(
             keras_model, pytorch_model, self.test_data, 1e-3)
 
@@ -77,7 +75,7 @@ class TestLayers(TransferTestCase, unittest.TestCase):
 
         pytorch_model = TransposeNet()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
 
     # Tests special activation function
@@ -89,7 +87,7 @@ class TestLayers(TransferTestCase, unittest.TestCase):
 
         pytorch_model = ELUNet()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
 
     # Tests activation function with learned parameters
@@ -102,7 +100,7 @@ class TestLayers(TransferTestCase, unittest.TestCase):
 
         pytorch_model = PReLUNet()
 
-        transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
+        self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
 
 
