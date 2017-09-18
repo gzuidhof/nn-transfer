@@ -28,5 +28,7 @@ install:
   - python setup.py install
 
 script:
-  - KERAS_BACKEND=theano python setup.py test
-  - KERAS_BACKEND=tensorflow python setup.py test
+  - TEST_TRANSFER_DIRECTION=keras2pytorch KERAS_BACKEND=theano python setup.py test
+  - TEST_TRANSFER_DIRECTION=keras2pytorch KERAS_BACKEND=tensorflow python setup.py test
+  - TEST_TRANSFER_DIRECTION=pytorch2keras KERAS_BACKEND=theano python setup.py test
+  - TEST_TRANSFER_DIRECTION=pytorch2keras KERAS_BACKEND=tensorflow python setup.py test

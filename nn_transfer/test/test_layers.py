@@ -5,7 +5,8 @@ import torch.nn as nn
 
 import keras
 from keras.models import Sequential
-from keras.layers import BatchNormalization, PReLU, ELU, Conv2DTranspose
+from keras.layers import BatchNormalization, PReLU, ELU
+from keras.layers import Conv2DTranspose, Conv2D
 
 from .helpers import TransferTestCase
 
@@ -46,6 +47,15 @@ class PReLUNet(nn.Module):
 
     def forward(self, x):
         return self.prelu(x)
+
+
+class Conv2DNet(nn.Module):
+    def __init__(self):
+        super(Conv2DNet, self).__init__()
+        self.conv = nn.Conv2d(3, 16, 7)
+
+    def forward(self, x):
+        return self.conv(x)
 
 
 class TestLayers(TransferTestCase, unittest.TestCase):
@@ -102,6 +112,48 @@ class TestLayers(TransferTestCase, unittest.TestCase):
 
         self.transfer(keras_model, pytorch_model)
         self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
+
+    def test_conv2d(self):
+        keras_model = Sequential()
+        keras_model.add(Conv2D(16, (7, 7), input_shape=(3, 32, 32),
+                               name='conv'))
+        keras_model.compile(loss=keras.losses.categorical_crossentropy,
+                            optimizer=keras.optimizers.SGD())
+
+        pytorch_model = Conv2DNet()
+
+        self.transfer(keras_model, pytorch_model)
+        self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
+
+    def test_keras_model_changed_as_expected(self):
+        keras_model = Sequential()
+        keras_model.add(Conv2D(16, (7, 7), input_shape=(3, 32, 32),
+                               name='conv'))
+        keras_model.compile(loss=keras.losses.categorical_crossentropy,
+                            optimizer=keras.optimizers.SGD())
+
+        pytorch_model = Conv2DNet()
+
+        weights_before = keras_model.layers[0].get_weights()[0]
+        prediction_before = keras_model.predict(self.test_data)
+
+        self.transfer(keras_model, pytorch_model)
+
+        weights_after = keras_model.layers[0].get_weights()[0]
+        prediction_after = keras_model.predict(self.test_data)
+
+        if self.is_keras_to_pytorch():  # Keras model should be unchanged
+            self.assertTrue((weights_before == weights_after).all())
+            self.assertEqual(
+                prediction_before.tobytes(),
+                prediction_after.tobytes(),
+                msg="Predictions not are exactly the same")
+        else:
+            self.assertFalse((weights_before == weights_after).all())
+            self.assertNotEqual(
+                prediction_before.tobytes(),
+                prediction_after.tobytes(),
+                msg="Predictions are exactly the same")
 
 
 if __name__ == '__main__':
