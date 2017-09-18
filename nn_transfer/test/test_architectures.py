@@ -1,55 +1,42 @@
 import unittest
 
-import torch
-from torch.autograd import Variable
+import numpy as np
 
 from .. import transfer
 
+from .helpers import TransferTestCase
 from .architectures.lenet import lenet_keras, LeNetPytorch
 from .architectures.simplenet import simplenet_keras, SimpleNetPytorch
 from .architectures.vggnet import vggnet_keras, vggnet_pytorch
 from .architectures.unet import unet_keras, UNetPytorch
 
 
-class TestArchitectures(unittest.TestCase):
+class TestArchitectures(TransferTestCase, unittest.TestCase):
 
     def setUp(self):
-        test_data = torch.rand(4, 1, 32, 32)
-        self.test_data_keras = test_data.numpy()
-        self.test_data_pytorch = Variable(test_data, requires_grad=False)
-
-        vgg_test_data = torch.rand(1, 3, 224, 224)
-        self.vgg_test_data_keras = vgg_test_data.numpy()
-        self.vgg_test_data_pytorch = Variable(
-            vgg_test_data, requires_grad=False)
+        self.test_data_small = np.random.rand(4, 1, 32, 32)
+        self.test_data_vgg = np.random.rand(1, 3, 224, 224)
+        self.test_data_unet = np.random.rand(1, 1, 224, 224)
 
     def test_simplenet(self):
         keras_model = simplenet_keras()
         pytorch_model = SimpleNetPytorch()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.test_data_keras)
-        pytorch_prediction = pytorch_model(self.test_data_pytorch).data.numpy()
-
-        self.assertEqual(keras_prediction.shape, pytorch_prediction.shape)
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=1e-6)
+        self.assertEqualPrediction(
+            keras_model,
+            pytorch_model,
+            self.test_data_small)
 
     def test_lenet(self):
         keras_model = lenet_keras()
         pytorch_model = LeNetPytorch()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.test_data_keras)
-        pytorch_prediction = pytorch_model(self.test_data_pytorch).data.numpy()
-
-        self.assertEqual(keras_prediction.shape, pytorch_prediction.shape)
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=1e-6)
+        self.assertEqualPrediction(
+            keras_model,
+            pytorch_model,
+            self.test_data_small)
 
     def test_unet(self):
         keras_model = unet_keras()
@@ -57,15 +44,10 @@ class TestArchitectures(unittest.TestCase):
         pytorch_model.eval()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.vgg_test_data_keras[:, :1])
-        pytorch_prediction = pytorch_model(
-            self.vgg_test_data_pytorch[:, :1]).data.numpy()
-
-        self.assertEqual(keras_prediction.shape, pytorch_prediction.shape)
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=1e-6)
+        self.assertEqualPrediction(
+            keras_model,
+            pytorch_model,
+            self.test_data_unet)
 
     def test_vggnet(self):
         keras_model = vggnet_keras()
@@ -73,15 +55,8 @@ class TestArchitectures(unittest.TestCase):
         pytorch_model.eval()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.vgg_test_data_keras)
-        pytorch_prediction = pytorch_model(
-            self.vgg_test_data_pytorch).data.numpy()
-
-        self.assertEqual(keras_prediction.shape, pytorch_prediction.shape)
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=1e-6)
+        self.assertEqualPrediction(
+            keras_model, pytorch_model, self.test_data_vgg)
 
 
 if __name__ == '__main__':

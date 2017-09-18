@@ -1,14 +1,15 @@
 import unittest
 
-import torch
+import numpy as np
 import torch.nn as nn
-from torch.autograd import Variable
 
 import keras
 from keras.models import Sequential
 from keras.layers import BatchNormalization, PReLU, ELU, Conv2DTranspose
 
 from .. import transfer
+
+from .helpers import TransferTestCase
 
 keras.backend.set_image_data_format('channels_first')
 
@@ -49,12 +50,10 @@ class PReLUNet(nn.Module):
         return self.prelu(x)
 
 
-class TestLayers(unittest.TestCase):
+class TestLayers(TransferTestCase, unittest.TestCase):
 
     def setUp(self):
-        test_data = torch.rand(1, 3, 32, 32)
-        self.test_data_keras = test_data.numpy()
-        self.test_data_pytorch = Variable(test_data, requires_grad=False)
+        self.test_data = np.random.rand(2, 3, 32, 32)
 
     def test_batch_normalization(self):
         keras_model = Sequential()
@@ -64,16 +63,10 @@ class TestLayers(unittest.TestCase):
                             optimizer=keras.optimizers.SGD())
 
         pytorch_model = BatchNet()
-        pytorch_model.eval()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.test_data_keras)
-        pytorch_prediction = pytorch_model(self.test_data_pytorch).data.numpy()
-
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=2e-3)
+        self.assertEqualPrediction(
+            keras_model, pytorch_model, self.test_data, 1e-3)
 
     def test_transposed_conv(self):
         keras_model = Sequential()
@@ -85,13 +78,7 @@ class TestLayers(unittest.TestCase):
         pytorch_model = TransposeNet()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.test_data_keras)
-        pytorch_prediction = pytorch_model(self.test_data_pytorch).data.numpy()
-
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=2e-3)
+        self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
 
     # Tests special activation function
     def test_elu(self):
@@ -103,13 +90,7 @@ class TestLayers(unittest.TestCase):
         pytorch_model = ELUNet()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.test_data_keras)
-        pytorch_prediction = pytorch_model(self.test_data_pytorch).data.numpy()
-
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=2e-3)
+        self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
 
     # Tests activation function with learned parameters
     def test_prelu(self):
@@ -122,13 +103,7 @@ class TestLayers(unittest.TestCase):
         pytorch_model = PReLUNet()
 
         transfer.keras_to_pytorch(keras_model, pytorch_model, verbose=False)
-
-        keras_prediction = keras_model.predict(self.test_data_keras)
-        pytorch_prediction = pytorch_model(self.test_data_pytorch).data.numpy()
-
-        for v1, v2 in zip(keras_prediction.flatten(),
-                          pytorch_prediction.flatten()):
-            self.assertAlmostEqual(v1, v2, delta=2e-3)
+        self.assertEqualPrediction(keras_model, pytorch_model, self.test_data)
 
 
 if __name__ == '__main__':
