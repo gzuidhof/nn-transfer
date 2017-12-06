@@ -15,6 +15,11 @@ else:
 print(TRANSFER_DIRECTION, "tests")
 
 
+def set_seeds():
+    torch.manual_seed(0)
+    np.random.seed(0)
+
+
 class TransferTestCase(object):
     def assertEqualPrediction(
             self, keras_model, pytorch_model, test_data, delta=1e-6):
