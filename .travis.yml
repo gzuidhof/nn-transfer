@@ -22,9 +22,9 @@ install:
 
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  - conda install pytorch torchvision cuda80 numpy scipy h5py -c pytorch
-  - conda install tensorflow -c conda-forge
-  - conda install theano pygpu
+  - conda install pytorch torchvision cuda80 numpy scipy h5py -c pytorch -q
+  - conda install tensorflow -c conda-forge -q
+  - conda install theano pygpu -q
   - python setup.py install
 
 script:
