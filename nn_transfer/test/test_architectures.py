@@ -25,7 +25,8 @@ class TestArchitectures(TransferTestCase, unittest.TestCase):
         self.assertEqualPrediction(
             keras_model,
             pytorch_model,
-            self.test_data_small)
+            self.test_data_small,
+            delta=1e-3)  # These results can vary due to float imprecision
 
     def test_lenet(self):
         set_seeds()
