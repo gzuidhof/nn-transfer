@@ -17,6 +17,8 @@ KERAS_BIAS_KEY = 'bias' + VAR_AFFIX
 KERAS_BETA_KEY = 'beta' + VAR_AFFIX
 KERAS_MOVING_MEAN_KEY = 'moving_mean' + VAR_AFFIX
 KERAS_MOVING_VARIANCE_KEY = 'moving_variance' + VAR_AFFIX
+KERAS_EPSILON = 1e-3
+PYTORCH_EPSILON = 1e-5
 
 
 def check_for_missing_layers(keras_names, pytorch_layer_names, verbose):
@@ -91,6 +93,8 @@ def keras_to_pytorch(keras_model, pytorch_model,
             # Load batch normalization running variance
             if running_var_key in input_state_dict:
                 running_var = params[KERAS_MOVING_VARIANCE_KEY][:]
+                # account for difference in epsilon used
+                running_var += KERAS_EPSILON - PYTORCH_EPSILON
                 state_dict[running_var_key] = torch.from_numpy(
                     running_var.transpose())
 
@@ -156,6 +160,8 @@ def pytorch_to_keras(pytorch_model, keras_model,
             # Load batch normalization running variance
             if running_var_key in input_state_dict:
                 running_var = input_state_dict[running_var_key].numpy()
+                # account for difference in epsilon used
+                running_var += PYTORCH_EPSILON - KERAS_EPSILON
                 params[KERAS_MOVING_VARIANCE_KEY][:] = running_var
 
     # pytorch_model.load_state_dict(state_dict)

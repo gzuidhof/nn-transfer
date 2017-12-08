@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from .helpers import TransferTestCase
+from .helpers import TransferTestCase, set_seeds
 from .architectures.lenet import lenet_keras, LeNetPytorch
 from .architectures.simplenet import simplenet_keras, SimpleNetPytorch
 from .architectures.vggnet import vggnet_keras, vggnet_pytorch
@@ -15,6 +15,7 @@ class TestArchitectures(TransferTestCase, unittest.TestCase):
         self.test_data_small = np.random.rand(4, 1, 32, 32)
         self.test_data_vgg = np.random.rand(1, 3, 224, 224)
         self.test_data_unet = np.random.rand(1, 1, 224, 224)
+        set_seeds()
 
     def test_simplenet(self):
         keras_model = simplenet_keras()
@@ -24,7 +25,8 @@ class TestArchitectures(TransferTestCase, unittest.TestCase):
         self.assertEqualPrediction(
             keras_model,
             pytorch_model,
-            self.test_data_small)
+            self.test_data_small,
+            delta=1e-3)  # These results can vary due to float imprecision
 
     def test_lenet(self):
         keras_model = lenet_keras()
