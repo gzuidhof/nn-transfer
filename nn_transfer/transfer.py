@@ -3,8 +3,8 @@ from collections import OrderedDict
 
 import numpy as np
 import h5py
-import torch
 import keras
+import torch
 
 from . import util
 
